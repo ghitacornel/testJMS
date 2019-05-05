@@ -57,26 +57,13 @@ public class Tests {
 
         // send all
         List<String> messages = buildMessages(size);
-        {
-            sendMessages(messages, senderThreads, MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES);
-        }
+        sendMessages(messages, senderThreads, MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES);
 
         // receive all
-        List<String> retrievedMessages = new ArrayList<>();
-        {
-            CountDownLatch latch = new CountDownLatch(size);
-            for (int i = 0; i < size; i++) {
-                receiverThreads.submit(() -> {
-                    retrievedMessages.add(MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES.receiveMessage());
-                    latch.countDown();
-                });
-            }
-            latch.await();
-        }
+        List<String> retrievedMessages = retrieveMessages(size, receiverThreads, MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES);
 
-        {// verify
-            verifyMessages(messages, retrievedMessages);
-        }
+        // verify
+        verifyMessages(messages, retrievedMessages);
 
     }
 
@@ -90,29 +77,15 @@ public class Tests {
 
         // send all
         List<String> messages = buildMessages(size);
-        {
-            sendMessages(messages, senderThreads, MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER);
-        }
+        sendMessages(messages, senderThreads, MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER);
 
         // receive all
-        List<String> retrievedMessages = new ArrayList<>();
-        {
-            CountDownLatch latch = new CountDownLatch(size);
-            for (int i = 0; i < size; i++) {
-                receiverThreads.submit(() -> {
-                    retrievedMessages.add(MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER.receiveMessage());
-                    latch.countDown();
-                });
-            }
-            latch.await();
-        }
+        List<String> retrievedMessages = retrieveMessages(size, receiverThreads, MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER);
 
-        {// verify
-            verifyMessages(messages, retrievedMessages);
-        }
+        // verify
+        verifyMessages(messages, retrievedMessages);
 
     }
-
 
     @Test
     public void testProduceMultipleMessagesConsumesMultipleMessagesOnMultipleThreadsSingleThreadPool() throws Exception {
@@ -123,26 +96,13 @@ public class Tests {
 
         // send all
         List<String> messages = buildMessages(size);
-        {
-            sendMessages(messages, mixedThreads, MQQueue.MIXED);
-        }
+        sendMessages(messages, mixedThreads, MQQueue.MIXED);
 
         // receive all
-        List<String> retrievedMessages = new ArrayList<>();
-        {
-            CountDownLatch latch = new CountDownLatch(size);
-            for (int i = 0; i < size; i++) {
-                mixedThreads.submit(() -> {
-                    retrievedMessages.add(MQQueue.MIXED.receiveMessage());
-                    latch.countDown();
-                });
-            }
-            latch.await();
-        }
+        List<String> retrievedMessages = retrieveMessages(size, mixedThreads, MQQueue.MIXED);
 
-        {// verify
-            verifyMessages(messages, retrievedMessages);
-        }
+        // verify
+        verifyMessages(messages, retrievedMessages);
 
     }
 
@@ -180,5 +140,19 @@ public class Tests {
         }
         latch.await();
     }
+
+    private List<String> retrieveMessages(int size, ExecutorService executorService, MQQueue queue) throws InterruptedException {
+        List<String> retrievedMessages = new ArrayList<>();
+        CountDownLatch latch = new CountDownLatch(size);
+        for (int i = 0; i < size; i++) {
+            executorService.submit(() -> {
+                retrievedMessages.add(queue.receiveMessage());
+                latch.countDown();
+            });
+        }
+        latch.await();
+        return retrievedMessages;
+    }
+
 
 }
