@@ -133,7 +133,7 @@ public class Tests {
 
         mixedThreads = Executors.newFixedThreadPool(10);
 
-        int size = 100;
+        int size = 1000;
 
         // send all
         List<String> messages = buildMessages(size);
