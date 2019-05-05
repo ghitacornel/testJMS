@@ -2,14 +2,16 @@ package context;
 
 import javax.jms.*;
 
+import static javax.jms.DeliveryMode.NON_PERSISTENT;
+
 public enum MQQueue {
 
-    SINGLE("Single"),
-    MANY("Many"),
-    MANY_TO_MANY("ManyToMany"),
+    SINGLE_THREAD_CONSUMER_AND_PRODUCER_ONE_MESSAGE("SINGLE_THREAD_CONSUMER_AND_PRODUCER_ONE_MESSAGE"),
+    SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES("SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES"),
+    MANY_THREADS_CONSUMER_AND_PRODUCER("MANY_THREADS_CONSUMER_AND_PRODUCER"),
     MIXED("Mixed");
 
-    private static final int ACKNOWLEDGE_MODE = Session.CLIENT_ACKNOWLEDGE;
+    private static final int ACKNOWLEDGE_MODE = Session.DUPS_OK_ACKNOWLEDGE;
 
     private final String queueName;
     private final Connection connection;
@@ -31,6 +33,7 @@ public enum MQQueue {
 
             TextMessage producerMessage = session.createTextMessage(message);
             producer.send(producerMessage);
+            producer.setDeliveryMode(NON_PERSISTENT);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

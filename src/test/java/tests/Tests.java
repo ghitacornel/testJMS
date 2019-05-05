@@ -36,9 +36,9 @@ public class Tests {
         senderThreads = Executors.newSingleThreadScheduledExecutor();
 
         final String message = "message";
-        senderThreads.submit(() -> MQQueue.SINGLE.sendMessage(message));
+        senderThreads.submit(() -> MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_ONE_MESSAGE.sendMessage(message));
 
-        Callable<String> callable = MQQueue.SINGLE::receiveMessage;
+        Callable<String> callable = MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_ONE_MESSAGE::receiveMessage;
         senderThreads.submit(callable);
         String retrievedMessages = callable.call();
 
@@ -53,7 +53,7 @@ public class Tests {
         senderThreads = Executors.newSingleThreadScheduledExecutor();
         receiverThreads = Executors.newSingleThreadScheduledExecutor();
 
-        int size = 100;
+        int size = 1000;
 
         // send all
         List<String> messages = buildMessages(size);
@@ -61,7 +61,7 @@ public class Tests {
             CountDownLatch latch = new CountDownLatch(size);
             for (String message : messages) {
                 senderThreads.submit(() -> {
-                    MQQueue.MANY.sendMessage(message);
+                    MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES.sendMessage(message);
                     latch.countDown();
                 });
             }
@@ -74,7 +74,7 @@ public class Tests {
             CountDownLatch latch = new CountDownLatch(size);
             for (int i = 0; i < size; i++) {
                 receiverThreads.submit(() -> {
-                    retrievedMessages.add(MQQueue.MANY.receiveMessage());
+                    retrievedMessages.add(MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES.receiveMessage());
                     latch.countDown();
                 });
             }
@@ -93,7 +93,7 @@ public class Tests {
         senderThreads = Executors.newFixedThreadPool(10);
         receiverThreads = Executors.newFixedThreadPool(10);
 
-        int size = 100;
+        int size = 1000;
 
         // send all
         List<String> messages = buildMessages(size);
@@ -101,7 +101,7 @@ public class Tests {
             CountDownLatch latch = new CountDownLatch(size);
             for (String message : messages) {
                 senderThreads.submit(() -> {
-                    MQQueue.MANY_TO_MANY.sendMessage(message);
+                    MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER.sendMessage(message);
                     latch.countDown();
                 });
             }
@@ -114,7 +114,7 @@ public class Tests {
             CountDownLatch latch = new CountDownLatch(size);
             for (int i = 0; i < size; i++) {
                 receiverThreads.submit(() -> {
-                    retrievedMessages.add(MQQueue.MANY_TO_MANY.receiveMessage());
+                    retrievedMessages.add(MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER.receiveMessage());
                     latch.countDown();
                 });
             }
