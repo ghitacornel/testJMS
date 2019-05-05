@@ -58,14 +58,7 @@ public class Tests {
         // send all
         List<String> messages = buildMessages(size);
         {
-            CountDownLatch latch = new CountDownLatch(size);
-            for (String message : messages) {
-                senderThreads.submit(() -> {
-                    MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES.sendMessage(message);
-                    latch.countDown();
-                });
-            }
-            latch.await();
+            sendMessages(messages, senderThreads, MQQueue.SINGLE_THREAD_CONSUMER_AND_PRODUCER_MANY_MESSAGES);
         }
 
         // receive all
@@ -98,14 +91,7 @@ public class Tests {
         // send all
         List<String> messages = buildMessages(size);
         {
-            CountDownLatch latch = new CountDownLatch(size);
-            for (String message : messages) {
-                senderThreads.submit(() -> {
-                    MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER.sendMessage(message);
-                    latch.countDown();
-                });
-            }
-            latch.await();
+            sendMessages(messages, senderThreads, MQQueue.MANY_THREADS_CONSUMER_AND_PRODUCER);
         }
 
         // receive all
@@ -138,14 +124,7 @@ public class Tests {
         // send all
         List<String> messages = buildMessages(size);
         {
-            CountDownLatch latch = new CountDownLatch(size);
-            for (String message : messages) {
-                mixedThreads.submit(() -> {
-                    MQQueue.MIXED.sendMessage(message);
-                    latch.countDown();
-                });
-            }
-            latch.await();
+            sendMessages(messages, mixedThreads, MQQueue.MIXED);
         }
 
         // receive all
@@ -189,6 +168,17 @@ public class Tests {
         System.out.println(retrievedMessages);
         System.out.println("received " + new HashSet<>(retrievedMessages).size() + " expected " + messages.size());
         Assert.assertEquals(messages, retrievedMessages);
+    }
+
+    private void sendMessages(List<String> messages, ExecutorService executorService, MQQueue queue) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(messages.size());
+        for (String message : messages) {
+            executorService.submit(() -> {
+                queue.sendMessage(message);
+                latch.countDown();
+            });
+        }
+        latch.await();
     }
 
 }
