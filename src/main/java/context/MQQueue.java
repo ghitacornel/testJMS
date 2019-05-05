@@ -74,7 +74,7 @@ public enum MQQueue {
 
             String text = consumerTextMessage.getText();
             consumerMessage.acknowledge();
-            if (text == null) System.err.println("null text");
+            if (text == null) System.err.println("null text");// TODO
             return text;
 
         } catch (Exception e) {

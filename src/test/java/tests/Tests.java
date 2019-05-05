@@ -176,6 +176,8 @@ public class Tests {
     }
 
     private static void verifyMessages(int size, List<String> messages, List<String> retrievedMessages) {
+
+        // TODO hy fail on read all messages ?
         Assert.assertEquals(messages.size(), retrievedMessages.size());
 
         try {
