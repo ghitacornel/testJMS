@@ -82,7 +82,7 @@ public class Tests {
         }
 
         {// verify
-            verifyMessages(size, messages, retrievedMessages);
+            verifyMessages(messages, retrievedMessages);
         }
 
     }
@@ -122,7 +122,7 @@ public class Tests {
         }
 
         {// verify
-            verifyMessages(size, messages, retrievedMessages);
+            verifyMessages(messages, retrievedMessages);
         }
 
     }
@@ -162,7 +162,7 @@ public class Tests {
         }
 
         {// verify
-            verifyMessages(size, messages, retrievedMessages);
+            verifyMessages(messages, retrievedMessages);
         }
 
     }
@@ -175,9 +175,9 @@ public class Tests {
         return messages;
     }
 
-    private static void verifyMessages(int size, List<String> messages, List<String> retrievedMessages) {
+    private static void verifyMessages(List<String> messages, List<String> retrievedMessages) {
 
-        // TODO hy fail on read all messages ?
+        // TODO why fail on read all messages ?
         Assert.assertEquals(messages.size(), retrievedMessages.size());
 
         try {
@@ -187,7 +187,7 @@ public class Tests {
         }
 
         System.out.println(retrievedMessages);
-        System.out.println("received " + new HashSet<>(retrievedMessages).size() + " expected " + size);
+        System.out.println("received " + new HashSet<>(retrievedMessages).size() + " expected " + messages.size());
         Assert.assertEquals(messages, retrievedMessages);
     }
 
