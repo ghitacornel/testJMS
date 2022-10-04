@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
 
-  db:
+  jms:
     image: webcenter/activemq
     container_name: activeMQ
     ports:
