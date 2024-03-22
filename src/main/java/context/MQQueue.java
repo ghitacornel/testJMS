@@ -1,8 +1,8 @@
 package context;
 
-import javax.jms.*;
+import jakarta.jms.*;
 
-import static javax.jms.DeliveryMode.NON_PERSISTENT;
+import static jakarta.jms.DeliveryMode.NON_PERSISTENT;
 
 public enum MQQueue {
 
