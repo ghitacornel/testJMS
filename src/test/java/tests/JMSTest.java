@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 /**
  * NOTE : if one test fails messages can get stuck on the queue => these messages must be manually deleted
  */
-public class Tests {
+public class JMSTest {
 
     private ExecutorService senderThreads;
     private ExecutorService receiverThreads;
